@@ -1,0 +1,7 @@
+programa teste
+    inteiro A B
+inicio
+    leia A
+    leia B
+    escreva A+B
+fimprogama

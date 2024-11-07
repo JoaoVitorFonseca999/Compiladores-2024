@@ -54,7 +54,12 @@
 
 %%
 programa
-
+    :   cabecalho
+            {printf("\tINPP\n");}
+        variaveis
+            {printf("\tAMEM\tx\n");}
+        T_INICIO lista_comandos T_FIMPROG
+            {printf("\tDMEM\tx\n\tFIMP\n");}
     ;
 cabecalho
     : T_PROGRAMA T_IDENT
@@ -92,10 +97,13 @@ comando
 
 leitura 
     : T_LEIA T_IDENT
+        {printf("\tLEIA\n");}
+        {printf("\tARZG\tx\n");}
     ;
 
 escrita
     : T_ESCREVA expressao
+        {printf("\tESCR\n");}
     ;
 
 repeticao
@@ -111,25 +119,26 @@ atribuicao
     ;
     
 expressao
-    : expressao T_MAIS expressao 
-    | expressao T_MENOS expressao 
-    | expressao T_VEZES expressao 
-    | expressao T_DIV expressao 
-    | expressao T_MAIOR expressao
-    | expressao T_MENOR expressao
-    | expressao T_IGUAL expressao
-    | expressao T_E expressao
-    | expressao T_OU expressao
-    | termo
+    : expressao T_MAIS expressao    {printf("\tSOMA\n");}
+    | expressao T_MENOS expressao   {printf("\tSUBT\n");}
+    | expressao T_VEZES expressao   {printf("\tMULT\n");}
+    | expressao T_DIV expressao     {printf("\tDIVI\n");}
+    | expressao T_MAIOR expressao   {printf("\tCMMA\n");}
+    | expressao T_MENOR expressao   {printf("\tCMME\n");}
+    | expressao T_IGUAL expressao   {printf("\tCMIG\n");}
+    | expressao T_E expressao       {printf("\tCONJ\n");}
+    | expressao T_OU expressao      {printf("\tDISJ\n");}
+    | termo 
     ;
 
 termo 
-    : T_IDENT
-    | T_NUM
-    | T_V
-    | T_F
+    : T_NUM                         {printf("\tCRCT\t%s\n",atomo);}
+    | T_IDENT                       {printf("\tCRVG\tx\n");}
+    | T_V                           {printf("\tCRCT\t1\n");}
+    | T_F                           {printf("\tCRCT\t0\n");}
     | T_ABRE expressao T_FECHA
-    | T_NAO termo
+    | T_NAO                         {printf("\tNEGA\n");}                   
+     termo
     ;
 
 %%
