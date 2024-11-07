@@ -1,9 +1,11 @@
 %{
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-    #include "lexico.c"
+#include "lexico.c"
+
+int contaVar = 0;
 %}
 
 %token T_PROGRAMA 
@@ -52,14 +54,19 @@
 
 %start programa
 
+%left T_MAIS T_MENOS
+%left T_VEZES T_DIV
+%left T_MAIOR T_MENOR T_IGUAL
+%left T_E T_OU
+
 %%
 programa
     :   cabecalho
-            {printf("\tINPP\n");}
-        variaveis
-            {printf("\tAMEM\tx\n");}
-        T_INICIO lista_comandos T_FIMPROG
-            {printf("\tDMEM\tx\n\tFIMP\n");}
+        {printf("\tINPP\n");}
+    variaveis
+        {printf("\tAMEM\t"+contaVar+"\n");}
+    T_INICIO lista_comandos T_FIMPROG
+        {printf("\tDMEM\t"+contaVar+"\n\tFIMP\n");}
     ;
 cabecalho
     : T_PROGRAMA T_IDENT
@@ -80,7 +87,9 @@ tipo
 
 lista_variaveis
     : lista_variaveis T_IDENT
+        {contaVar++;}   
     | T_IDENT
+        {contaVar++;}
 
 lista_comandos
     : lista_comandos comando
@@ -103,7 +112,6 @@ leitura
 
 escrita
     : T_ESCREVA expressao
-        {printf("\tESCR\n");}
     ;
 
 repeticao
@@ -130,7 +138,6 @@ expressao
     | expressao T_OU expressao      {printf("\tDISJ\n");}
     | termo 
     ;
-
 termo 
     : T_NUM                         {printf("\tCRCT\t%s\n",atomo);}
     | T_IDENT                       {printf("\tCRVG\tx\n");}
@@ -143,8 +150,8 @@ termo
 
 %%
 
-int main() {
+int main(){
     yyparse();
-    puts("Programa OK!");
+    puts("Programa ok!");
     return 0;
 }
