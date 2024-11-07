@@ -1,3 +1,11 @@
+%{
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+
+    #include "lexico.c"
+%}
+
 %token T_PROGRAMA 
 %token T_INICIO
 %token T_FIMPROG
@@ -46,7 +54,7 @@
 
 %%
 programa
-    : cabecalho variaveis T_INICIO lista_comandos T_FIMPROG
+
     ;
 cabecalho
     : T_PROGRAMA T_IDENT
@@ -125,3 +133,9 @@ termo
     ;
 
 %%
+
+int main() {
+    yyparse();
+    puts("Programa OK!");
+    return 0;
+}
