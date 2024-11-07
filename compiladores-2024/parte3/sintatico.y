@@ -4,8 +4,10 @@
 #include <string.h>
 
 #include "lexico.c"
+#include "utils.c"
 
 int contaVar = 0;
+int tipo = 0;
 %}
 
 %token T_PROGRAMA 
@@ -64,9 +66,9 @@ programa
     :   cabecalho
         {printf("\tINPP\n");}
     variaveis
-        {printf("\tAMEM\t"+contaVar+"\n");}
+        {printf("\tAMEM\t%d\n",contaVar);}
     T_INICIO lista_comandos T_FIMPROG
-        {printf("\tDMEM\t"+contaVar+"\n\tFIMP\n");}
+        {printf("\tDMEM\t%d\n\tFIMP\n",contaVar);}
     ;
 cabecalho
     : T_PROGRAMA T_IDENT
@@ -81,13 +83,19 @@ declaracao_variaveis
     ;
 
 tipo
-    : T_INTEIRO
-    | T_LOGICO
+    : T_INTEIRO {tipo = INT;}
+    | T_LOGICO  {tipo = LOG;}
     ;
 
 lista_variaveis
     : lista_variaveis T_IDENT
-        {contaVar++;}   
+        {
+            strcpy(elemTab.id,atomo);
+            elemTab.end = contaVar;
+            elemTab.tip = tipo;
+            insereSimbolo(elemTab);
+            contaVar++;
+            }   
     | T_IDENT
         {contaVar++;}
 
@@ -106,8 +114,11 @@ comando
 
 leitura 
     : T_LEIA T_IDENT
-        {printf("\tLEIA\n");}
-        {printf("\tARZG\tx\n");}
+        {
+            int pos = buscaSimbolo(atomo);
+            printf("\tLEIA\n");
+            printf("\tARZG\t%d\n", tabSimb[pos].end);
+        }
     ;
 
 escrita
@@ -140,7 +151,7 @@ expressao
     ;
 termo 
     : T_NUM                         {printf("\tCRCT\t%s\n",atomo);}
-    | T_IDENT                       {printf("\tCRVG\tx\n");}
+    | T_IDENT                       {printf("\tCRVG\t%d\n",buscaSimbolo(atomo));}
     | T_V                           {printf("\tCRCT\t1\n");}
     | T_F                           {printf("\tCRCT\t0\n");}
     | T_ABRE expressao T_FECHA
