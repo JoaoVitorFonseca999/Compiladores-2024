@@ -49,10 +49,6 @@ void insereSimbolo(struct elemTabSimbolos elem)
 }
 
 
-
-
-
-
 //Minha pilha
 #define TAM_PILHA 100 // Tamanho máximo da pilha
 
@@ -79,4 +75,21 @@ int desempilha() {
     int valor = pilha[topo--]; // Retorna o valor e decrementa o topo
     // printf("Desempilhado: %d\n", valor);
     return valor;
+}
+
+
+//tipos
+
+// tipo1 e tipo2 são os tipos esperados na expressão
+// ret é o tipo que será empilhado como retorno esperado
+
+void testaTipo(int tipo1, int tipo2, int ret)
+{
+    int t1 = desempilha();
+    int t2 = desempilha();
+    if(t1 != tipo1 || t2 != tipo2)
+    {
+        yyerror("Incompatibilidade de tipos!!");
+    }
+    empilha(ret);
 }
