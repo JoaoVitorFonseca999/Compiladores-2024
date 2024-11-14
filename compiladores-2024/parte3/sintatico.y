@@ -8,6 +8,7 @@
 
 int contaVar = 0;
 int tipo = 0;
+int rotulo = 0;
 %}
 
 %token T_PROGRAMA 
@@ -64,11 +65,11 @@ int tipo = 0;
 %%
 programa
     :   cabecalho
-        {printf("\tINPP\n");}
+        {fprintf(yyout, "\tINPP\n");}
     variaveis
-        {printf("\tAMEM\t%d\n",contaVar);}
+        {fprintf(yyout, "\tAMEM\t%d\n",contaVar);}
     T_INICIO lista_comandos T_FIMPROG
-        {printf("\tDMEM\t%d\n\tFIMP\n",contaVar);}
+        {fprintf(yyout, "\tDMEM\t%d\n\tFIMP\n",contaVar);}
     ;
 cabecalho
     : T_PROGRAMA T_IDENT
@@ -120,54 +121,122 @@ leitura
     : T_LEIA T_IDENT
         {
             int pos = buscaSimbolo(atomo);
-            printf("\tLEIA\n");
-            printf("\tARZG\t%d\n", tabSimb[pos].end);
+            fprintf(yyout, "\tLEIA\n");
+            fprintf(yyout, "\tARZG\t%d\n", tabSimb[pos].end);
         }
     ;
 
 escrita
     : T_ESCREVA expressao
-    {printf("\tESCR\n");}
+    {fprintf(yyout, "\tESCR\n");}
     ;
 
 repeticao
-    : T_ENQUANTO expressao T_FACA lista_comandos T_FIMQTO
+    : T_ENQUANTO
+        {
+            fprintf(yyout, "L%d\tNADA\n", ++rotulo);
+            empilha(rotulo);
+        }
+    expressao T_FACA
+        {
+            fprintf(yyout, "\tDSVF\tL%d\n", ++rotulo);
+            empilha(rotulo);
+        }
+    lista_comandos
+    T_FIMQTO
+        {
+            int y = desempilha();
+            int x = desempilha();
+            fprintf(yyout, "\tDSVD\tL%d\nL%d\tNADA\n",x,y);}
+
     ;
 
 selecao
-    : T_SE expressao T_ENTAO lista_comandos T_SENAO lista_comandos T_FIMSE
+    : T_SE expressao 
+    T_ENTAO
+    {
+        fprintf(yyout, "\tDSVF\tL%d\n", ++rotulo);
+        empilha(rotulo);
+    }
+    lista_comandos 
+    T_SENAO
+    {
+        int y = desempilha();
+        fprintf(yyout, "\tDSVS\tL%d\n", ++rotulo);
+        empilha(rotulo);
+        fprintf(yyout, "L%d\tNADA\n", y);
+    }
+    lista_comandos 
+    T_FIMSE
+    {
+        int x = desempilha();
+        fprintf(yyout, "L%d\tNADA\n", x);
+    }
 
 
 atribuicao
-    : T_IDENT T_ATRIB expressao
+    : T_IDENT
+    {
+        int pos = buscaSimbolo(atomo);
+        empilha(pos);
+    }
+    T_ATRIB expressao
+    {
+        int pos = desempilha();
+        fprintf(yyout, "\tARZG\t%d\n", tabSimb[pos].end);
+    }
     ;
     
 expressao
-    : expressao T_MAIS expressao    {printf("\tSOMA\n");}
-    | expressao T_MENOS expressao   {printf("\tSUBT\n");}
-    | expressao T_VEZES expressao   {printf("\tMULT\n");}
-    | expressao T_DIV expressao     {printf("\tDIVI\n");}
-    | expressao T_MAIOR expressao   {printf("\tCMMA\n");}
-    | expressao T_MENOR expressao   {printf("\tCMME\n");}
-    | expressao T_IGUAL expressao   {printf("\tCMIG\n");}
-    | expressao T_E expressao       {printf("\tCONJ\n");}
-    | expressao T_OU expressao      {printf("\tDISJ\n");}
+    : expressao T_MAIS expressao    {fprintf(yyout, "\tSOMA\n");}
+    | expressao T_MENOS expressao   {fprintf(yyout, "\tSUBT\n");}
+    | expressao T_VEZES expressao   {fprintf(yyout, "\tMULT\n");}
+    | expressao T_DIV expressao     {fprintf(yyout, "\tDIVI\n");}
+    | expressao T_MAIOR expressao   {fprintf(yyout, "\tCMMA\n");}
+    | expressao T_MENOR expressao   {fprintf(yyout, "\tCMME\n");}
+    | expressao T_IGUAL expressao   {fprintf(yyout, "\tCMIG\n");}
+    | expressao T_E expressao       {fprintf(yyout, "\tCONJ\n");}
+    | expressao T_OU expressao      {fprintf(yyout, "\tDISJ\n");}
     | termo 
     ;
 termo 
-    : T_NUM                         {printf("\tCRCT\t%s\n",atomo);}
-    | T_IDENT                       {printf("\tCRVG\t%d\n",buscaSimbolo(atomo));}
-    | T_V                           {printf("\tCRCT\t1\n");}
-    | T_F                           {printf("\tCRCT\t0\n");}
+    : T_NUM                         {fprintf(yyout, "\tCRCT\t%s\n",atomo);}
+    | T_IDENT                       {fprintf(yyout, "\tCRVG\t%d\n",buscaSimbolo(atomo));}
+    | T_V                           {fprintf(yyout, "\tCRCT\t1\n");}
+    | T_F                           {fprintf(yyout, "\tCRCT\t0\n");}
     | T_ABRE expressao T_FECHA
-    | T_NAO                         {printf("\tNEGA\n");}                   
+    | T_NAO                         {fprintf(yyout, "\tNEGA\n");}                   
      termo
     ;
 
 %%
 
-int main(){
+int main(int argc, char *argv[]){
+    char nameIn[30];
+    char nameOut[30];
+    char *p;
+
+    if(argc < 2){
+        printf("Use:\n\t %s <nome fonte>.simples\n", argv[0]);
+        return 10;
+    }
+    p = strstr(argv[1],".simples");
+    if(p) *p = 0;
+    strcpy(nameIn,argv[1]);
+    strcat(nameIn,".simples");
+    strcpy(nameOut,argv[1]);
+    strcat(nameOut,".mvs");
+    printf("Arquivo de entrada: %s\n",nameIn);
+    printf("Arquivo de saida: %s\n",nameOut);
+
+    yyin = fopen(nameIn,"rt");
+    yyout = fopen(nameOut,"wt");
+
     yyparse();
+
+    fclose(yyin);
+    fclose(yyout);
+
     puts("Programa ok!");
     return 0;
 }

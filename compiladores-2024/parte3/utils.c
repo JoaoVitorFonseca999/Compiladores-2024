@@ -47,3 +47,36 @@ void insereSimbolo(struct elemTabSimbolos elem)
 
     // printf("Inserido: %s\n", elem.id);
 }
+
+
+
+
+
+
+//Minha pilha
+#define TAM_PILHA 100 // Tamanho máximo da pilha
+
+// Pilha para inteiros
+int pilha[TAM_PILHA]; // Vetor que armazena a pilha
+int topo = -1; // Índice do topo da pilha (inicialmente vazio)
+
+// Função para empilhar um valor
+void empilha(int valor) {
+    if (topo == TAM_PILHA - 1) {
+        printf("Erro: pilha cheia!\n");
+        return;
+    }
+    pilha[++topo] = valor; // Incrementa o topo e insere o valor
+    // printf("Empilhado: %d\n", valor);
+}
+
+// Função para desempilhar um valor
+int desempilha() {
+    if (topo == -1) {
+        printf("Erro: pilha vazia!\n");
+        return -1; // Retorna -1 indicando erro (pilha vazia)
+    }
+    int valor = pilha[topo--]; // Retorna o valor e decrementa o topo
+    // printf("Desempilhado: %d\n", valor);
+    return valor;
+}
