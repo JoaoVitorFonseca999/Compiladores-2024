@@ -1,20 +1,19 @@
 //Tabela de simbolos
 
-enum
-{
+#include <string.h> // Para a função strcpy()
+
+enum {
     INT,
     LOG
-}
+};
 
 #define TAM_TAB 100
 
-struct elemTabSimbolos
-{
-    char id[50];    //nome do identificador
-    int end;    //endereço do identificador
-    int tip;   //tipo do identificador
-}tabSimb[TAM_TAB], elemTab;
-
+struct elemTabSimbolos {
+    char id[50];    // Nome do identificador
+    int end;        // Endereço do identificador
+    int tip;        // Tipo do identificador (INT, LOG, etc.)
+} tabSimb[TAM_TAB], elemTab;
 
 int posTab = 0; // próxima posição livre para inserção na tabela de símbolos
 
@@ -45,4 +44,6 @@ void insereSimbolo(struct elemTabSimbolos elem)
         yyerror(msg);
     }
     tabSimb[posTab++] = elem;
+
+    // printf("Inserido: %s\n", elem.id);
 }

@@ -549,10 +549,10 @@ static const yytype_int8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    67,    67,    69,    66,    74,    77,    78,    81,    82,
-      86,    87,    91,    99,   103,   104,   108,   109,   110,   111,
-     112,   116,   125,   129,   133,   137,   141,   142,   143,   144,
-     145,   146,   147,   148,   149,   150,   153,   154,   155,   156,
-     157,   158,   158
+      86,    87,    91,    99,   107,   108,   112,   113,   114,   115,
+     116,   120,   129,   134,   138,   142,   146,   147,   148,   149,
+     150,   151,   152,   153,   154,   155,   158,   159,   160,   161,
+     162,   163,   163
 };
 #endif
 
@@ -1216,106 +1216,116 @@ yyreduce:
 
   case 13: /* lista_variaveis: T_IDENT  */
 #line 100 "sintatico.y"
-        {contaVar++;}
-#line 1221 "sintatico.c"
+        {strcpy(elemTab.id,atomo);
+            elemTab.end = contaVar;
+            elemTab.tip = tipo;
+            insereSimbolo(elemTab);
+            contaVar++;}
+#line 1225 "sintatico.c"
     break;
 
   case 21: /* leitura: T_LEIA T_IDENT  */
-#line 117 "sintatico.y"
+#line 121 "sintatico.y"
         {
             int pos = buscaSimbolo(atomo);
             printf("\tLEIA\n");
             printf("\tARZG\t%d\n", tabSimb[pos].end);
         }
-#line 1231 "sintatico.c"
+#line 1235 "sintatico.c"
+    break;
+
+  case 22: /* escrita: T_ESCREVA expressao  */
+#line 130 "sintatico.y"
+    {printf("\tESCR\n");}
+#line 1241 "sintatico.c"
     break;
 
   case 26: /* expressao: expressao T_MAIS expressao  */
-#line 141 "sintatico.y"
+#line 146 "sintatico.y"
                                     {printf("\tSOMA\n");}
-#line 1237 "sintatico.c"
+#line 1247 "sintatico.c"
     break;
 
   case 27: /* expressao: expressao T_MENOS expressao  */
-#line 142 "sintatico.y"
+#line 147 "sintatico.y"
                                     {printf("\tSUBT\n");}
-#line 1243 "sintatico.c"
+#line 1253 "sintatico.c"
     break;
 
   case 28: /* expressao: expressao T_VEZES expressao  */
-#line 143 "sintatico.y"
+#line 148 "sintatico.y"
                                     {printf("\tMULT\n");}
-#line 1249 "sintatico.c"
+#line 1259 "sintatico.c"
     break;
 
   case 29: /* expressao: expressao T_DIV expressao  */
-#line 144 "sintatico.y"
+#line 149 "sintatico.y"
                                     {printf("\tDIVI\n");}
-#line 1255 "sintatico.c"
+#line 1265 "sintatico.c"
     break;
 
   case 30: /* expressao: expressao T_MAIOR expressao  */
-#line 145 "sintatico.y"
+#line 150 "sintatico.y"
                                     {printf("\tCMMA\n");}
-#line 1261 "sintatico.c"
+#line 1271 "sintatico.c"
     break;
 
   case 31: /* expressao: expressao T_MENOR expressao  */
-#line 146 "sintatico.y"
+#line 151 "sintatico.y"
                                     {printf("\tCMME\n");}
-#line 1267 "sintatico.c"
+#line 1277 "sintatico.c"
     break;
 
   case 32: /* expressao: expressao T_IGUAL expressao  */
-#line 147 "sintatico.y"
+#line 152 "sintatico.y"
                                     {printf("\tCMIG\n");}
-#line 1273 "sintatico.c"
+#line 1283 "sintatico.c"
     break;
 
   case 33: /* expressao: expressao T_E expressao  */
-#line 148 "sintatico.y"
+#line 153 "sintatico.y"
                                     {printf("\tCONJ\n");}
-#line 1279 "sintatico.c"
+#line 1289 "sintatico.c"
     break;
 
   case 34: /* expressao: expressao T_OU expressao  */
-#line 149 "sintatico.y"
+#line 154 "sintatico.y"
                                     {printf("\tDISJ\n");}
-#line 1285 "sintatico.c"
+#line 1295 "sintatico.c"
     break;
 
   case 36: /* termo: T_NUM  */
-#line 153 "sintatico.y"
+#line 158 "sintatico.y"
                                     {printf("\tCRCT\t%s\n",atomo);}
-#line 1291 "sintatico.c"
+#line 1301 "sintatico.c"
     break;
 
   case 37: /* termo: T_IDENT  */
-#line 154 "sintatico.y"
+#line 159 "sintatico.y"
                                     {printf("\tCRVG\t%d\n",buscaSimbolo(atomo));}
-#line 1297 "sintatico.c"
+#line 1307 "sintatico.c"
     break;
 
   case 38: /* termo: T_V  */
-#line 155 "sintatico.y"
+#line 160 "sintatico.y"
                                     {printf("\tCRCT\t1\n");}
-#line 1303 "sintatico.c"
+#line 1313 "sintatico.c"
     break;
 
   case 39: /* termo: T_F  */
-#line 156 "sintatico.y"
+#line 161 "sintatico.y"
                                     {printf("\tCRCT\t0\n");}
-#line 1309 "sintatico.c"
+#line 1319 "sintatico.c"
     break;
 
   case 41: /* $@3: %empty  */
-#line 158 "sintatico.y"
+#line 163 "sintatico.y"
                                     {printf("\tNEGA\n");}
-#line 1315 "sintatico.c"
+#line 1325 "sintatico.c"
     break;
 
 
-#line 1319 "sintatico.c"
+#line 1329 "sintatico.c"
 
       default: break;
     }
@@ -1508,7 +1518,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 162 "sintatico.y"
+#line 167 "sintatico.y"
 
 
 int main(){

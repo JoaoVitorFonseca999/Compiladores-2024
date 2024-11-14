@@ -97,7 +97,11 @@ lista_variaveis
             contaVar++;
             }   
     | T_IDENT
-        {contaVar++;}
+        {strcpy(elemTab.id,atomo);
+            elemTab.end = contaVar;
+            elemTab.tip = tipo;
+            insereSimbolo(elemTab);
+            contaVar++;}
 
 lista_comandos
     : lista_comandos comando
@@ -123,6 +127,7 @@ leitura
 
 escrita
     : T_ESCREVA expressao
+    {printf("\tESCR\n");}
     ;
 
 repeticao
